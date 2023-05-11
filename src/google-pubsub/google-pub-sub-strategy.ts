@@ -10,7 +10,6 @@ import {
   GOOGLE_PUB_SUB_SERVER_OPTIONS,
   GooglePubSubOptions,
 } from './google-pub-sub-options';
-import { ReceivedEventMessage } from './event-message';
 
 type MessageHandler = (message: Message) => Promise<void>;
 
@@ -93,9 +92,17 @@ export class GooglePubSubStrategy
         },
       });
 
-      const receivedEventMessage: ReceivedEventMessage = {
+      let jsonParse = {};
+      try {
+        jsonParse = JSON.parse(pubSubMessage.data.toString());
+      } catch (e) {
+        this.logger.error('Message bad formatter');
+        pubSubMessage.ack();
+      }
+
+      const receivedEventMessage = {
         id: pubSubMessage.id,
-        payload: JSON.parse(pubSubMessage.data.toString()),
+        payload: jsonParse,
         publishTime: pubSubMessage.publishTime.toISOString(),
       };
 

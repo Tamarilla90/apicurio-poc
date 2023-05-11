@@ -5,9 +5,10 @@ import { GooglePubSubModule } from './google-pubsub';
 import { ConsumerController } from './consumer/consumer.controller';
 import { ProducerController } from './producer/producer.controller';
 import { ConfigModule } from '@nestjs/config';
+import { ApicurioClientModule } from './apicurio-client/apicurio-client.module';
 
 @Module({
-  imports: [GooglePubSubModule, ConfigModule.forRoot()],
+  imports: [GooglePubSubModule, ConfigModule.forRoot(), ApicurioClientModule],
   controllers: [AppController, ConsumerController, ProducerController],
   providers: [AppService],
 })

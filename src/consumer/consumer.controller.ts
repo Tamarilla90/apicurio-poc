@@ -1,12 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { of } from 'rxjs';
+import { ValidationMessage } from '../validation-message/validation-message';
 
 @Controller('consumer')
 export class ConsumerController {
+  constructor(private readonly validationMessage: ValidationMessage) {}
+
   @MessagePattern('CE_POC_TOPIC')
   consumerEvent(@Payload() message) {
-    console.log(message);
-    return of({});
+    return this.validationMessage.validate(message);
   }
 }

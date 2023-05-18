@@ -22,6 +22,7 @@
   "dependencies": {
     "@apicurio/data-models": "^2.0.0-SNAPSHOT",
     "@google-cloud/pubsub": "^3.5.2",
+    "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",

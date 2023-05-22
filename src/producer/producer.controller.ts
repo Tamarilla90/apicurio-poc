@@ -11,11 +11,16 @@ export class ProducerController {
     private readonly validationMessage: ValidationMessage,
   ) {}
 
-  @Post()
-  sendMessageToPubsub(@Body() message: Record<string, any>) {
+  @Post('/valid_message')
+  sendMessageValidToPubsub(@Body() message: Record<string, any>) {
     return this.validationMessage.validate(message).pipe(
       mergeMap(() => this.clientProxy.emit('CE_POC_TOPIC', message)),
       mergeMap(() => of({})),
     );
+  }
+
+  @Post('/not_valid_message')
+  sendMessageNotValidToPubsub(@Body() message: Record<string, any>) {
+    return this.clientProxy.emit('CE_POC_TOPIC', message);
   }
 }

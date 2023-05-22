@@ -127,6 +127,7 @@ export class GooglePubSubStrategy
               errorMessage: error.message,
             },
           });
+          pubSubMessage.ack();
         },
       });
     };

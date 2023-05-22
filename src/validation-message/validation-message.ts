@@ -1,11 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { AJV } from '../ajv/ajv.module';
 import Ajv from 'ajv';
 import { HttpService } from '@nestjs/axios';
-import { mergeMap, of, throwError } from 'rxjs';
+import { map, mergeMap, of, throwError } from 'rxjs';
 
 @Injectable()
 export class ValidationMessage {
+  private readonly logger = new Logger(ValidationMessage.name);
+
   private urlCloudEvents =
     'http://localhost:8080/apis/registry/v2/groups/CloudEvents/artifacts/cwExtensionRequest.json';
 
@@ -17,11 +19,12 @@ export class ValidationMessage {
   validate(value: Record<string, any>) {
     const { payload } = value;
     return this.validateSchemaMessage(payload).pipe(
-      mergeMap(() => {
-        if (payload.data) {
-          return this.validateSchemaData(payload);
-        }
-        return of(payload);
+      mergeMap(() => this.validateSchemaData(payload)),
+      map((payload) => {
+        this.logger.log({
+          message: 'Validations is success',
+        });
+        return payload;
       }),
     );
   }
@@ -32,11 +35,6 @@ export class ValidationMessage {
         return this.validateMessage(schema, payload);
       }),
     );
-  }
-
-  private validateSchemaMetadata(payload: Record<string, any>) {
-    const { metadataschema, metadata } = payload;
-    return this.getSchemaAndValidateData(metadataschema, metadata);
   }
 
   private validateSchemaData(payload: Record<string, any>) {
@@ -63,6 +61,6 @@ export class ValidationMessage {
     const validate = this.ajv.compile(schema);
     const valid = validate(payload);
     if (valid) return of(payload);
-    throwError(() => validate.errors);
+    return throwError(() => validate.errors);
   }
 }
